@@ -1,0 +1,986 @@
+# begin of bash_lib file
+
+# TODO
+# sorting array, string ...
+
+if [ "0" = "${bash_lib_included_flag:-0}" ]; then
+    declare -x bash_lib_included_flag=bash_lib_included
+    #echo "$0 $BASH_SOURCE (${BASH_SOURCE[@]})"
+
+#   # Begin of function LogPrint
+#   # the following definintion should not add the leading underline, due to the caller need to use them.
+#   # external variables for LogPrint
+#   declare -r ECHO="echo" # just to replace echo
+#   declare -r ERROR="error" # print red color text
+#   declare -r WARN="warn" # print yellow color text
+#   declare -r INFO="info" # print green color text
+#   declare -r MESSAGE="message" # no color
+#   declare -r SPECIAL="special" # exceptional case, print the specified color test, the color control string should be in the second para.
+#   declare -r HIGHLIGHT="highlight" #same with sourceInsight, highlight the messages, yellow background and black text
+#   declare -r ColorOff='\033[0m'
+#
+#   declare -r Fmt_ECHO="echo" # just to replace echo, same effect with message
+#   declare -r Fmt_ERROR="error" # print red colour text
+#   declare -r Fmt_WARN="warn" # print yellow colour text
+#   declare -r Fmt_INFO="info" # print green colour text
+#   declare -r Fmt_MESSAGE="message" # no colour
+#   declare -r Fmt_HIGHLIGHT="highlight" #same with sourceInsight, highlight the messages, yellow background and black text
+#
+#   declare -r Fmt_COLOUR_OFF="format_colour_off" # 0 reset to default colour settings
+#   declare -r Fmt_NORMAL="format_normal" # default colour
+#   declare -r Fmt_BOLD="format_bold" # display bold text, 1
+#   declare -r Fmt_HALF_BRIGHTNESS="format_half_brightness" # 2 half brightness
+#   declare -r Fmt_UNDER_LINE="format_under_line" # display under line, 3
+#   declare -r Fmt_BLINK="format_blink" # 5 blink text
+#   declare -r Fmt_EXCHANGE_BG_FG="format_reverse_bg_fg" # 7 exchange back ground colour and foreground colour
+#   declare -r Fmt_NONEWLINE="format_no_new_line" # do not print a new line after the message
+#
+#   declare -r Fmt_DISABLE_UNDER_LINE="format_disable_under_line" # display under line, 3
+#   declare -r Fmt_DISABLE_BLINK="format_disable_blink" # 5 blink text
+#   declare -r Fmt_DISABLE_EXCHANGE_BG_FG="format_disable_reverse_bg_fg" # 7 exchange back ground colour and foreground colour
+#
+#   #text colour / foreground colour
+#   declare -r Fmt_BLACK="format_black" # black text 30
+#   declare -r Fmt_RED="format_red" # red text 31
+#   declare -r Fmt_GREEN="format_green" # green text 32
+#   declare -r Fmt_YELLOW="format_yellow" # yellow text 33
+#   declare -r Fmt_BLUE="format_blue" # blue text 34
+#   declare -r Fmt_PURPLE="format_purple" # purple text 35
+#   declare -r Fmt_CYAN="format_cyan" # cyan text 36
+#   declare -r Fmt_WHITE="format_white" # white text 37
+#   declare -r Fmt_GRAY="format_gray" # gray text 37
+#
+#   # background colour
+#   declare -r Fmt_BG_BLACK="format_bg_black" # black 40
+#   declare -r Fmt_BG_RED="format_bg_red" # red 41
+#   declare -r Fmt_BG_GREEN="format_bg_green" # green 42
+#   declare -r Fmt_BG_YELLOW="format_bg_yellow" # yellow 43
+#   declare -r Fmt_BG_BLUE="format_bg_blue" # blue 44
+#   declare -r Fmt_BG_PURPLE="format_bg_purple" # purple 45
+#   declare -r Fmt_BG_CYAN="format_bg_cyan" # cyan 46
+#   declare -r Fmt_BG_WHITE="format_bg_white" # white 47
+#   declare -r Fmt_BG_GRAY="format_bg_gray" # gray 47
+#
+#   declare -r Fmt_SPECIAL="format_special" # User customized.
+#
+#   # 字颜色：30—–37                     |  字背景颜色范围：40—–47
+#   # echo -e “\033[30m black  \033[0m”  |  echo -e “\033[40;37m bg black,  fg white \033[0m”
+#   # echo -e “\033[31m red    \033[0m”  |  echo -e “\033[41;37m bg red,    fg white \033[0m”
+#   # echo -e “\033[32m green  \033[0m”  |  echo -e “\033[42;37m bg green,  fg white \033[0m”
+#   # echo -e “\033[33m yelow  \033[0m”  |  echo -e “\033[43;37m bg yellow, fg white \033[0m”
+#   # echo -e “\033[34m blue   \033[0m”  |  echo -e “\033[44;37m bg blue,   fg white \033[0m”
+#   # echo -e “\033[35m purple \033[0m”  |  echo -e “\033[45;37m bg purple, fg white \033[0m”
+#   # echo -e “\033[36m cyan   \033[0m”  |  echo -e “\033[46;37m bg cyan,   fg white \033[0m”
+#   # echo -e “\033[37m white  \033[0m”  |  echo -e “\033[47;30m bg white,  fg black \033[0m”
+#
+#   # echo -e "\033[fg;bg;ctlm  messages \033[0m"
+#
+#   ### # this the a plain version of LogPrint function
+#   ### # Usage : LogPrint [ECHO | ERROR | WARN | INFO | HIGHLIGHT | SPECIAL [| MESSAGE]] "Soft/Hard quoted message content"
+#   ### # Usage : LogPrint SPECIAL ColorSetting "Soft/Hard quoted message content, disable sequence will be added automatically."
+#   ### function LogPrint()
+#   ### {
+#   ###     local logLevel="${MESSAGE}"
+#   ###     local logContent=""
+#   ###     local ColorSetting=""
+#   ###
+#   ###     if [ $# -ne 0 ]; then
+#   ###         case "$1" in
+#   ###             "${ECHO}" | "${ERROR}" | "${INFO}" | "${WARN}" | "${MESSAGE}" | "${HIGHLIGHT}" ) logLevel="$1"; shift;;
+#   ###             "${SPECIAL}" ) logLevel="$1"; ColorSetting="$2"; shift 2;;
+#   ###             * ) logLevel="${MESSAGE}";; # LogPrint "${INFO}" 'No log level specified, use the default value : INFO'
+#   ###         esac
+#   ###     else
+#   ###         LogPrint "${ERROR}" "No Parameter for LogPrint! please check."
+#   ###     fi
+#   ###
+#   ###     logContent="${@}"
+#   ###
+#   ###     case "${logLevel}" in
+#   ###         "${ECHO}"      ) echo ${logContent};;
+#   ###         "${ERROR}"     ) echo -e "\033[31m${logContent}\033[0m, call trace : ${FUNCNAME[@]";;
+#   ###         "${WARN}"      ) echo -e "\033[33m${logContent}\033[0m, call trace : ${FUNCNAME[@]";;
+#   ###         "${INFO}"      ) echo -e "\033[32m${logContent}\033[0m";;
+#   ###         "${MESSAGE}"   ) echo "${logContent}";;
+#   ###         "${SPECIAL}"   ) echo -e "${ColorSetting}${logContent}\033[0m";;
+#   ###         "${HIGHLIGHT}" ) echo -e "\033[7m\033[33m${logContent}\033[0m";;
+#   ###     esac
+#   ###
+#   ###     return 0
+#   ### }
+#
+#   ### TODO : the following function is another version of Log print, need to be merge with the former one.
+#   # Description : Print the text with specified format, if no parameter input, a new line will be printed.
+#   # Usage : LogPrint [ $Fmt_Format ] "Soft/Hard quoted message content"
+#   # Usage : LogPrint "${Format_1}" "${Format_2}" ... "${Format_n}" "Soft/Hard quoted message content"
+#   # Usage : LogPrint "${SPECIAL}" "${ColourSetting}" "Soft/Hard quoted message content, disable sequence will be added automatically."
+#   function LogPrint()
+#   {
+#       local    IsFeedNewLine=true
+#       local    LogContent=""
+#       local    LogContentPrefix=""
+#       local    LogContentSuffix=""
+#       local -r ColourOff='\033[0m'
+#
+#       for para in "$@"
+#       do
+#           case "$para" in
+#               "${Fmt_ERROR}" | "${Fmt_WARN}" | "${Fmt_INFO}" ) LogContentPrefix="- $(date) -- [$1] : ";;& # must be processed first.
+#               "${Fmt_ECHO}"       ) LogContent="${LogContent}\033[0m";;
+#               "${Fmt_MESSAGE}"    ) LogContent="${LogContent}\033[32m";;
+#               "${Fmt_INFO}"       ) LogContent="${LogContent}\033[32m";;
+#               "${Fmt_WARN}"       ) LogContent="${LogContent}\033[33m, call trace : ${FUNCNAME[@]";;
+#               "${Fmt_ERROR}"      ) LogContent="${LogContent}\033[31m, call trace : ${FUNCNAME[@]";;
+#               "${Fmt_HIGHLIGHT}"  ) LogContent="${LogContent}\033[7m\033[33m";;
+#               "${Fmt_COLOUR_OFF}" ) LogContent="${LogContent}\033[0m";;
+#               "${Fmt_NORMAL}"     ) LogContent="${LogContent}\033[0m";;
+#               "${Fmt_BOLD}"       ) LogContent="${LogContent}\033[1m";;
+#               "${Fmt_HALF_BRIGHTNESS}"        ) LogContent="${LogContent}\033[2m";;
+#               "${Fmt_UNDER_LINE}"             ) LogContent="${LogContent}\033[4m";;
+#               "${Fmt_BLINK}"                  ) LogContent="${LogContent}\033[5m";;
+#               "${Fmt_EXCHANGE_BG_FG}"         ) LogContent="${LogContent}\033[7m";;
+#               "${Fmt_DISABLE_UNDER_LINE}"     ) LogContent="${LogContent}\033[24m";;
+#               "${Fmt_DISABLE_BLINK}"          ) LogContent="${LogContent}\033[25m";;
+#               "${Fmt_DISABLE_EXCHANGE_BG_FG}" ) LogContent="${LogContent}\033[27m";;
+#               "${Fmt_BG_BLACK}"  ) LogContent="${LogContent}\033[40m";;
+#               "${Fmt_BG_RED}"    ) LogContent="${LogContent}\033[41m";;
+#               "${Fmt_BG_GREEN}"  ) LogContent="${LogContent}\033[42m";;
+#               "${Fmt_BG_YELLOW}" ) LogContent="${LogContent}\033[43m";;
+#               "${Fmt_BG_BLUE}"   ) LogContent="${LogContent}\033[44m";;
+#               "${Fmt_BG_PURPLE}" ) LogContent="${LogContent}\033[45m";;
+#               "${Fmt_BG_CYAN}"   ) LogContent="${LogContent}\033[46m";;
+#               "${Fmt_BG_WHITE}"  ) LogContent="${LogContent}\033[47m";;
+#               "${Fmt_BG_GRAY}"   ) LogContent="${LogContent}\033[47m";;
+#               "${Fmt_BLACK}"     ) LogContent="${LogContent}\033[30m";;
+#               "${Fmt_RED}"       ) LogContent="${LogContent}\033[31m";;
+#               "${Fmt_GREEN}"     ) LogContent="${LogContent}\033[32m";;
+#               "${Fmt_YELLOW}"    ) LogContent="${LogContent}\033[33m";;
+#               "${Fmt_BLUE}"      ) LogContent="${LogContent}\033[34m";;
+#               "${Fmt_PURPLE}"    ) LogContent="${LogContent}\033[35m";;
+#               "${Fmt_CYAN}"      ) LogContent="${LogContent}\033[36m";;
+#               "${Fmt_WHITE}"     ) LogContent="${LogContent}\033[37m";;
+#               "${Fmt_GRAY}"      ) LogContent="${LogContent}\033[37m";;
+#               "${Fmt_NONEWLINE}" ) IsFeedNewLine=false;;
+#               "${Fmt_SPECIAL}"   ) break;;
+#               *                  ) LogContent="${LogContent}${para}";;
+#           esac
+#       done
+#
+#       if [ "${IsFeedNewLine}" == "true" ]; then
+#           echo -e "${LogContentPrefix}${LogContent}${LogContentSuffix}${ColourOff}"
+#       else
+#           echo -ne "${LogContentPrefix}${LogContent}${LogContentSuffix}${ColourOff}"
+#       fi
+#
+#       return 0
+#   }
+#   # End of function LogPrint
+
+else
+    #echo "$0 $BASH_SOURCE (${BASH_SOURCE[@]})"
+    echo "Warning, Double sourced!"
+fi
+
+
+# alias
+shopt -s expand_aliases
+# define for test, due to the function LogPrint can not be multi-sourced
+# alias LogPrint='echo this is a test of alias;echo'
+alias LogPrint='echo'
+# alias LogPrint=':' # mute all display
+
+function UsageOfBashLib()
+{
+    # TODO : grep this file to get all function name and add the comments of each function.
+    # Here Document, usually used to instead the fixed user input.
+    cat <<- EOF
+Usage: source path/to/this_file
+EOF
+
+    return 0
+}
+
+
+# TODO & Bug:
+# source this file multi-times, the global readonly definintion will issue errors (20170418)
+# random number generate function
+# funny function like cowsay figlet
+# float number calcaulation
+# test the number bigger than 32767, what gona happen ?
+
+
+# Dependency :
+
+
+# Rules for bash_lib :
+# all the following functions and variables are used as libarary, so be careful with the implementation.
+# to avoid the name conflict, all the names, which will NOT be used by the caller,
+# those who only referenced in this file should be started with the underline.
+
+
+# Global definition
+
+
+# $1 seconds counting down, not very precise
+function CountingDown()
+{
+    # clear
+    # LogPrint "${Fmt_INFO}" "$1 seconds counting down, \nif you want to cancel this operation, \nyou can strike Ctrl + c"
+    LogPrint -e "$1 seconds counting down, \nif you want to cancel this operation, \nyou can strike Ctrl + c"
+    local backSpaceCount=""
+    if [ $# -lt 1 ] || ! IsInt "$1" ;then
+        LogPrint "This function need at least one parameter, counting seconds."
+        return 1
+    fi
+
+    LogPrint -ne "$1";sleep 0.5
+    for ((i = $1 - 1; i > 0; i--));do
+        backSpaceCount=""
+        for((i=0; i < ${#i}; i++)); do
+            backSpaceCount="${backSpaceCount}\b"
+        done
+        LogPrint -ne "${backSpaceCount}>>>>>$i"
+        # LogPrint "${Fmt_NONEWLINE}" "${backSpaceCount}>>>>>$i"
+        sleep 0.9
+    done
+
+    LogPrint -e "${backSpaceCount}\ Good Luck"
+
+    # erase the displayed number, currently 10 spaces erase 10 characters
+    # LogPrint -ne "\r          \r"
+
+    return 0
+}
+
+# to lower Case
+# para1 : string to be transfer
+function ToLowerCase()
+{
+    echo $1 | tr '[A-Z]''[a-z]'
+    # echo $1 | tr [:upper:] [:lower:]
+}
+
+# to upper case
+# para1 : string to be transfer
+function ToUpperCase()
+{
+    echo $1 | tr '[a-z]''[A-Z]'
+    # echo $1 | tr [:lower:] [:upper:]
+}
+
+# Description : get the args[0] days before or later args[1]
+# args[0], number of days, +3 means 3 days later, -3 means 3 days before
+# args[1], date, format : yyyy-MM-dd, default today
+# date can do this, so this function is not so necessary
+#     date -d "2017-01-04 128 days" +%F, 2017-01-04  128天后的日期
+#     date -d "2017-01-04 128 days ago" +%F, 2017-01-04  128天前的日期
+#     date -d "128 days" +%F, 128天后的日期
+#     date -d "-128 days" +%F, 128天前的日期
+function get_expected_date()
+{
+    local -i lSeconds=0
+    local    lDaysOffset=+1
+    local    lBaseDate="$(date +%F)"
+
+    case "$#" in
+        "0" ) echo "No input parameters, use the default value $lDaysOffset $lBaseDate";;
+        "1" ) lDaysOffset="$1";;
+         *  ) lDaysOffset="$1"; lBaseDate=$2;;
+    esac
+
+    lSeconds=`date -d $lBaseDate +%s`
+    if [ "${lDaysOffset:0:1}" = "-" ];then
+        lSeconds=$((lSeconds - 86400*${lDaysOffset:1})) # 86400 sec = 1 day
+    elif [ "${lDaysOffset:0:1}" = "+" ];then
+        lSeconds=$((lSeconds + 86400*${lDaysOffset:1}))
+    else # + can be omitted
+        lSeconds=$((lSeconds + 86400*${lDaysOffset}))
+    fi
+    days_expect=`date -d @$lSeconds +%F`
+    printf "$lBaseDate offset by %2s day(s) is $days_expect\n" "$lDaysOffset"
+
+    return 0
+}
+
+# Input Para : $1 / $2 two date, like '20170906' or '20170906 12:24:40'
+function get_Interval_days()
+{
+    local -i Sec1=$(date -d "$1" +%s)
+    local -i Sec2=$(date -d "$2" +%s)
+
+    if [ $# -ge 3 ];then
+        if [ $Sec1 -gt $Sec2 ];then
+            echo "date $1 is $(( ($Sec1 - $Sec2)/(24*60*60) )) days after $2"
+        else
+            echo "date $1 is $(( ($Sec2 - $Sec1)/(24*60*60) )) days before $2"
+        fi
+    else
+        if [ $Sec1 -gt $Sec2 ];then
+            echo "$(( ($Sec1 - $Sec2)/(24*60*60) ))"
+        else
+            echo "$(( ($Sec2 - $Sec1)/(24*60*60) ))"
+        fi
+    fi
+}
+
+function IsInt()
+{
+    expr $1 + 0&>/dev/null
+    if [ $? -ne 0 ]; then
+        # LogPrint "parameter is not a integer!"
+        return 1
+    fi
+
+    return 0
+    # tmp=`echo $1 | sed 's/[0-9]//g' | sed 's/[-+]//g'`
+    # [ -n "${tmp}"]&& { echo "Args must be integer!";exit 1; }
+
+    # # Bash
+    # if [[ $foo != *[!0-9]* ]]; then
+        # echo "'$foo' is strictly numeric"
+    # else
+        # echo "'$foo' has a non-digit somewhere in it"
+    # fi
+
+    # # POSIX
+    # case $var in
+        # '')
+            # printf 'var is empty\n';;
+        # *[!0-9]*)
+            # printf '%s has a non-digit somewhere in it\n' "$var";;
+        # *)
+            # printf '%s is strictly numeric\n' "$var";;
+    # esac >&2
+
+    # # POSIX
+    # case $var in
+        # '' | *[!0-9]*)
+            # echo "$0: $var: invalid digit" >&2; exit 1;;
+    # esac
+
+    # # POSIX
+    # case ${var#[-+]} in   # notice ${var#prefix} substitution to trim sign
+        # '')
+            # printf 'var is empty\n';;
+        # *.*.*)
+            # printf '%s has more than one decimal point in it\n' "$var";;
+        # *[!0-9.]*)
+            # printf '%s has a non-digit somewhere in it\n' "$var";;
+        # *)
+            # printf '%s looks like a valid float\n' "$var";;
+    # esac >&2
+
+    # shopt -s extglob
+    # [[ $var = +([0-9]) ]]
+
+    # # Bash / ksh
+    # shopt -s extglob
+
+    # if [[ $foo = @(*[0-9]*|!([+-]|)) && $foo = ?([+-])*([0-9])?(.*([0-9])) ]]; then
+      # echo 'foo is a floating-point number'
+    # fi
+
+    # # Bourne
+    # if echo "$foo" | grep -qE '^[-+]?([0-9]+\.?|[0-9]*\.[0-9]+)$'; then
+        # echo "'$foo' is a number"
+    # else
+        # echo "'$foo' is not a number"
+    # fi
+
+    # # Bash
+    # # The regexp must be stored in a var and expanded for backward compatibility with versions < 3.2
+
+    # regexp='^[-+]?[0-9]*(\.[0-9]*)?$'
+    # if [[ $foo = *[0-9]* && $foo =~ $regexp ]]; then
+        # echo "'$foo' looks rather like a number"
+    # else
+        # echo "'$foo' doesn't look particularly numeric to me"
+    # fi
+
+    # # fails with ksh
+    # if [ "$foo" -eq "$foo" ] 2>/dev/null; then
+     # echo "$foo is an integer"
+    # fi
+
+    # if printf %f "$foo" >/dev/null 2>&1; then
+      # echo "$foo is a float"
+    # fi
+}
+
+# test command : for var in 1 2 3;do echo ${var};pause;done
+function pause()
+{
+    LogPrint "+++++++++++++++++++++++++ Press any key to continue... +++++++++++++++++++++++++"
+    SAVEDSTTY="$(stty -g)"
+    stty -echo
+    stty raw
+    dd if=/dev/tty bs=1 count=1 2>/dev/null
+    stty -raw
+    stty echo
+    stty $SAVEDSTTY
+
+    # read does this:
+    # read -n1 -r -p "Press any key to continue..." key
+    # The -n1 specifies that it only waits for a single character. The -r puts it into raw mode, which is necessary because otherwise, if you press something like backslash, it doesn't register until you hit the next key. The -p specifies the prompt, which must be quoted if it contains spaces. The key argument is only necessary if you want to know which key they pressed, in which case you can access it through $key.
+    # If you are using Bash, you can also specify a timeout with -t, which causes read to return a failure when a key isn't pressed. So for example :
+    # read -t5 -n1 -r -p 'Press any key in the next five seconds...' key
+    # if [ "$?" -eq "0" ]; then
+        # echo 'A key was pressed.'
+    # else
+        # echo 'No key was pressed.'
+    # fi
+    # Strictly speaking, that would be "Enter any non-NUL character to continue". Some keys don't send any character (like Ctrl...) and some send more than one (like F1, Home...). bash ignores NUL characters.
+
+    # -r specifies raw mode, which don't allow combined characters like "\" or "^".
+    # -s specifies silent mode, and because we don't need keyboard output.
+    # -p $'prompt' specifies the prompt, which need to be between $' and ' to let spaces and escaped characters. Be careful, you must put between single quotes with dollars symbol to benefit escaped characters, otherwise you can use simple quotes.
+    # Enter solution, read line, and mute the input char(s) display
+    # read -rsp $'Press enter to continue...\n'
+
+    # Escape solution
+    # -d $'\e' specifies escappe as delimiter charater, so as a final character for current entry, this is possible to put any character but be careful to put a character that the user can type.
+    # read -rsp $'Press escape to continue...\n' -d $'\e'
+
+    # Any key except Ctrl Shift Alt etc.
+    # -n 1 specifies that it only needs a single character.
+    # read -rsp $'Press any key to continue...\n' -n 1 key
+    # echo $key
+
+    # Question with preselected choice, -e specifies readline mode. -i $'Y' specifies Y as initial text in readline mode.
+    # -e specifies readline mode.
+    # -i $'Y' specifies Y as initial text in readline mode.
+    # key serve in case you need to know the input, in -n1 case, the key that has been pressed.
+    # read -rp $'Are you sure (Y/n) : ' -ei $'Y' key;
+    # echo $key
+
+    # Timeout solution
+    # -t 5 specifies a timeout of 5 seconds
+    # read -rsp $'Press any key or wait 2 seconds to continue...\n' -n 1 -t 2;
+
+    # Sleep enhanced alias
+    # $? serve to know the exit code of the last program, for read, 142 in case of timeout, 0 correct input. Put $? in a variable as soon as possible if you need to test it after somes commands, because all commands would rewrite $?
+    # read -rst 3; timeout=$?
+    # echo $timeout
+
+    # read -n1 is not portable. A portable way to do the same might be:
+    # (   trap "stty $(stty -g;stty -icanon)" EXIT
+    # LC_ALL=C dd bs=1 count=1 >/dev/null 2>&1
+    # )   </dev/tty
+    # Besides using read, for just a press ENTER to continue prompt you could do:
+    # sed -n q &>/dev/null </dev/tty
+
+    # read -p "read"
+
+    # read -n 1 -p "$*" INP
+    # if [ $INP != '' ] ; then
+    #         LogPrint "${Fmt_NONEWLINE}" '\b \n'
+    # fi
+
+    return 0
+}
+
+# TODO
+function get_user_input()
+{
+    # TODO : try the command "select" to implement this function
+    # read -p "please input the project name ( FSM4.0 / PSINT / PSINT3 / FB1311 / FB1304 / FB1407 / trunk ) ,then press Enter (Default "trunk", Use "Ctrl + Backspace" to fix the typo.):" KEY
+    # CheckBranchName "${KEY}"
+    # if [ "$?" != "0" ]; then
+    #     return 1
+    # fi
+    return 0
+}
+
+# because of some ssh terminal do not support the backspace ( ctrl + backspace maybe ?),
+# so there will be some problem for this kind of client
+function test_get_user_input()
+{
+    get_user_input
+    LogPrint "${Fmt_INFO}" "your input branch name is ${g_ParaBranchName}"
+}
+
+# RANDOM system variable, range 0-32767
+# $1, up limit for the random number, means generate random 0 - $1
+function GenRandomNum()
+{
+    local -i uplimit=${1:-32767}
+    local RandomNum=$(( RANDOM % ${uplimit} ))
+
+    # this display should not be muted.
+    echo $RandomNum
+}
+
+# $1, up limit for the random number, means generate random 0 - $1, default 32767
+# $2, element count, default 8
+function GenRandomArray()
+{
+    local -a RandomArray=()
+    local -i uplimit=${1:-32767}
+    local -i cnt=0
+
+    for ((cnt = 0; cnt < ${2:=8}; cnt++));do
+        RandomArray[$cnt]=$(( RANDOM % ${uplimit} ))
+    done
+
+    # this display should not be muted.
+    echo "${RandomArray[@]}"
+}
+
+# $1, length, default 8
+function GenRandomString()
+{
+    local RandomString=""
+    # echo $RANDOM | md5sum | cut -c1-8
+    # openssl rand -base64 8 | md5sum | cut -c1-8
+
+    local -i  length=${1:-8}
+    local -i  i=1
+    local -ar seq=(0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t u v w x y z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z)
+    local -r  num_seq=${#seq[@]}
+
+    while [ "$i" -le "${length}" ]; do
+        RandomString="${RandomString}${seq[$((RANDOM%num_seq))]}"
+        let "i=i+1"
+    done
+
+    echo "The random string is: ${RandomString}"
+
+    # this display should not be muted.
+    echo $RandomString
+}
+
+# default, 8 letters(both upper case and lower case), digits, underline, other chars like $ ^ & etc.
+# cover all printable char on the standard key board
+function GenRandomPsw()
+{
+    local RandomPsw=""
+    local -i  length=${1:-8}
+    local -i  i=1
+    local -ar seq=(0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t u v w x y z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z \~ \` \! \@ \# \$ \% \^ \& \* \( \) \_ \+ \= \- \| \\ \{ \[ \} \] \' \" \: \; \? \> \. \< \, \/)
+    local -r  num_seq=${#seq[@]}
+
+    while [ "$i" -le "${length}" ]; do
+        RandomPsw="${RandomPsw}${seq[$((RANDOM%num_seq))]}"
+        let "i=i+1"
+    done
+
+    echo "The random string is: ${RandomPsw}"
+
+    # this display should not be muted.
+    echo $RandomPsw
+}
+
+### test command : echo "this is a test" | _color_ blue bold
+function _color_()
+{
+    case "$1" in
+        red)    nn="31";;
+        green)  nn="32";;
+        yellow) nn="33";;
+        blue)   nn="34";;
+        purple) nn="35";;
+        cyan)   nn="36";;
+    esac
+    ff=""
+    case "$2" in
+        bold)   ff=";1";;
+        bright) ff=";2";;
+        uscore) ff=";4";;
+        blink)  ff=";5";;
+        invert) ff=";7";;
+    esac
+    color_begin=`echo -e -n "\033[${nn}${ff}m"`
+    color_end=`echo -e -n "\033[0m"`
+    while read line; do
+        echo "${color_begin}${line}${color_end}"
+    done
+}
+
+function IsDigitOnly()
+# check if $1 does indeed contain only characters digit, 0-9
+{
+    local var
+    local _returnValue=0
+
+    for var in "$@"; do
+        if [[ ! "${var}" =~ ^[0-9]*$ ]]; then
+            LogPrint "${var} is not Digit Only"
+            _returnValue=1
+        fi
+    done
+
+    return ${_returnValue}
+}
+
+function IsValidOctal()
+{
+    local var
+    local _returnValue=0
+
+    for var in "$@";do
+        if [[ ! "${var}" =~ ^[-+]?0[0-7]*$ ]];then
+            LogPrint "${var} is not a valid Octal"
+            _returnValue=1
+        else
+            LogPrint "${var} is a valid Octal"
+        fi
+    done
+
+    return ${_returnValue};
+}
+
+function IsValidDecimal()
+{
+    local var
+    local _returnValue=0
+
+    for var in "$@";do
+        if [[ ! "${var}" =~ ^[-+]?[0-9]*$ ]];then
+            LogPrint "${var} is not a valid Decimal"
+            _returnValue=1
+        else
+            LogPrint "${var} is a valid Decimal"
+        fi
+    done
+
+    return ${_returnValue};
+}
+
+function IsValidHexadecimal()
+{
+    local var
+    local _returnValue=0
+
+    for var in "$@";do
+        if [[ ! "${var}" =~ ^0[xX][0-9a-fA-F]*$ ]];then
+            LogPrint "${var} is not a valid Hexadecimal"
+            _returnValue=1
+        else
+            LogPrint "${var} is a valid Hexadecimal"
+        fi
+    done
+
+    return ${_returnValue};
+}
+
+function IsValidNumber()
+{
+    local var;
+    local sign="+";
+
+    # support Octal, decimal, hexadecimal, and sign is allowed.
+    for var in "$@";do
+        if [[ "${var::1}" =~ ^[-+]$ ]];then
+            sign="${var:0:1}"
+            var="${var: 1}"
+        fi
+
+        if [[ "${var:0:2}" =~ ^0[xX]$ ]];then
+            IsValidHexadecimal "${var}"
+        elif [[ "${var::1}" = "0" ]];then
+            IsValidOctal "${sign}${var}"
+        else
+            IsValidDecimal "${sign}${var}"
+        fi
+
+    done
+    return 0
+}
+
+declare    g_Index=0
+declare -a g_Result=(0)
+function TransferToDecimal()
+{
+    local var
+    local _returnValue=0
+
+    g_Index=0
+    g_Result=(0)
+
+    for var in "$@";do
+        if IsValidHexadecimal "${var}";then
+            g_Result[${g_Index}]=$(echo "obase=10;ibase=16;${var}" | bc)
+        else
+            _returnValue=1
+        fi
+        if IsValidDecimal "${var}";then
+            g_Result[${g_Index}]="${var}"
+        else
+            _returnValue=1
+        fi
+        if IsValidDecimal "${var}";then
+            g_Result[${g_Index}]=$(echo "obase=10;ibase=8;${var}" | bc)
+        else
+            _returnValue=1
+        fi
+
+        if [ ${_returnValue} -ne 0 ] || ! IsValidOctal "${g_Result[${g_Index}]}"; then
+            continue
+        fi
+        ((g_Index=g_Index+1))
+    done
+
+    echo "${g_Result[@]}"
+
+    return "${_returnValue}";
+}
+
+# check if $1 does indeed contain only characters a-z,A-Z
+function IsLetterOnly()
+{
+    local var
+    local _returnValue=0
+
+    for var in "$@"; do
+        if [[ ! "${var}" =~ ^[a-zA-Z]*$ ]]; then
+            LogPrint "${var} is not Letter Only"
+            _returnValue=1
+        fi
+    done
+
+    return ${_returnValue}
+}
+
+# check if $1 does indeed contain only characters a-z,A-Z,0-9
+function IsLetterOrDigitOnly()
+{
+    local var
+    local _returnValue=0
+
+    for var in "$@"; do
+        if [[ ! "${var}" =~ ^[a-zA-Z0-9]*$ ]]; then
+            LogPrint "${var} is not Letter Or Digit Only"
+            _returnValue=1
+        fi
+    done
+
+    return ${_returnValue}
+}
+
+# check validation of IP address
+function IsValidIP()
+{
+    local var
+    local _returnValue=0
+
+    for var in "$@"; do
+        if [[ ! "${var}" =~ ^([0-9]{1,2}|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]{1,2}|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]{1,2}|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]{1,2}|1[0-9]{2}|2[0-4][0-9]|25[0-5])$ ]]; then
+            LogPrint "${var} is not valid a IP address."
+            _returnValue=1
+        else
+            LogPrint "${var} is valid IP address, and the match result is :"
+            LogPrint "1st section : ${BASH_REMATCH[1]}"
+            LogPrint "2nd section : ${BASH_REMATCH[2]}"
+            LogPrint "3rd section : ${BASH_REMATCH[3]}"
+            LogPrint "4th section : ${BASH_REMATCH[4]}"
+        fi
+
+        # echo $var | grep -E "^[0-9]\{1,3\}\.\([0-9]\{1,3\}\.\)\{2\}[0-9]\{1,3\}$" > /dev/null;
+        # #IP address must be all digits
+        # if [ $? -ne 0 ]
+        # then
+            # return 1
+        # fi
+        # for num in `echo $1 | awk -F. '{print $1, $2, $3, $4}'`
+        # do
+            # #each num should be [ 0 ~ 255 ]
+            # if [ $num -gt 255 ] || [ $num -lt 0 ]
+            # then
+                # return 1
+            # fi
+        # done
+    done
+
+    return ${_returnValue}
+}
+
+###################
+### Calculation ###
+###################
+
+function __add {
+   LogPrint $(( ${1:-0} + ${2:-0} ))
+}
+
+#乘积
+function __mul {
+   LogPrint $(( ${1:-0} * ${2:-0} ))
+}
+
+#除法  $1 / $2
+function __div {
+    if [ "${2:-1}" -ne 0 ]
+    then
+        LogPrint $(( ${1:-0} / ${2:-0} ))
+    else
+        LogPrint -1
+    fi
+}
+
+# Ex: globmatches [ -q ] string globpattern
+# Does $1 match the glob expr $2 ?
+# -q flag = set return status to 0 (true) or 1 (false)
+# no -q flag = echo "1" (true) or "0" (false)
+# Unfortunately, the return status is opposite from the echo'ed string
+function globmatches()
+{
+    if [ $1 = "-q" ]; then
+        shift
+        case "$1" in
+            $2 ) true ;;
+            * ) false ;;
+        esac
+    else
+        case "$1" in
+            $2 ) echo 1 ; true ;;
+            * ) echo 0 ; false ;;
+        esac
+    fi
+}
+# test command
+# if globmatches -q $1 "*.tar" ; then
+#   echo "Found a tar file"
+# elif globmatches -q $1 "*zip" ; then
+#   echo "Found a zip file"
+# fi
+
+
+# TODO : there is a variable in the ENV, named SECONDS it can also record the time
+# TODO : g_StartTime is needed, but no implemented in this scirpt
+function CalcConsumedTime()
+{
+    # depend on g_StartTime, which is set at the very begining of the script
+    # also gReturnValue is used in this function, which is the return status of the script
+
+    local -i Seconds=0
+    local -i Minutes=0
+    local -i Hours=0
+    local -i TimeDiff=0
+    local    Duration="0 sec"
+    local    LogColor="\033[7m\033[31m" # fg red, exchange the bg and fg
+
+    g_EndTime="$(date "+%F %T %Z")"
+    ((TimeDiff = $(date -d "${g_EndTime}" +%s) - $(date -d "${g_StartTime}" +%s)))
+    ((Seconds = TimeDiff % 60))
+    ((Hours = TimeDiff / 60))
+    ((Minutes = Hours % 60))
+    ((Hours = Hours / 60))
+    if [ "${Seconds}" != "0" ];then Duration="${Seconds} sec"; fi
+    if [ "${Minutes}" != "0" ];then Duration="${Minutes} min ${Duration}"; fi
+    if [ "${Hours}"   != "0" ];then Duration="${Hours} hour ${Duration}"; fi
+
+    if [ "${gReturnValue}" = "0" ];then
+        LogColor="\033[7m\033[32m" # fg green, exchange the bg and fg
+    fi
+    LogPrint "${Fmt_SPECIAL}" "\nJob done, Duration : ${LogColor}${g_StartTime}${ColorOff} ~ ${LogColor}${g_EndTime}${ColorOff}, ${LogColor}${Duration}${ColorOff}."
+
+    return 0
+}
+
+# New Implementation with High Resolution Time
+# TODO : g_StartTime is also needed, declare -r g_BeginTime="$(date +%Y.%m.%d.%H.%M.%S.%N.%Z)"
+function CalcConsumedTimeHighResolution()
+{
+    # depend on g_StartTime, which is set at the very begining of the script
+    # also gReturnValue is used in this function, which is the return status of the script
+
+    local -i nanosec=0
+    local -i Seconds=0
+    local -i Minutes=0
+    local -i Hours=0
+    local -i day=0
+    local -i month=0
+    local -i year=0
+    local    Duration=""
+    local    LogColour="\033[7m\033[31m" # fg red, exchange the bg and fg
+
+    # year.month.day.week.day_in_week.hour.minute.second.nanosecond.timezone
+    # date +%Y.%m.%d.%U.%u.%H.%M.%N.%Z
+    g_EndTime="$(date +%Y.%m.%d.%H.%M.%S.%N.%Z)"
+    ((year    = 10#"$(echo $g_EndTime | cut -d '.' -f 1)" - 10#"$(echo $g_BeginTime | cut -d '.' -f 1)"))
+    ((month   = 10#"$(echo $g_EndTime | cut -d '.' -f 2)" - 10#"$(echo $g_BeginTime | cut -d '.' -f 2)"))
+    ((day     = 10#"$(echo $g_EndTime | cut -d '.' -f 3)" - 10#"$(echo $g_BeginTime | cut -d '.' -f 3)"))
+    ((Hours   = 10#"$(echo $g_EndTime | cut -d '.' -f 4)" - 10#"$(echo $g_BeginTime | cut -d '.' -f 4)"))
+    ((Minutes = 10#"$(echo $g_EndTime | cut -d '.' -f 5)" - 10#"$(echo $g_BeginTime | cut -d '.' -f 5)"))
+    ((Seconds = 10#"$(echo $g_EndTime | cut -d '.' -f 6)" - 10#"$(echo $g_BeginTime | cut -d '.' -f 6)"))
+    ((nanosec = 10#"$(echo $g_EndTime | cut -d '.' -f 7)" - 10#"$(echo $g_BeginTime | cut -d '.' -f 7)"))
+
+    # if [ ${year} -lt 0 -o ${month} -lt 0 -o ${day} -lt 0 -o ${Hours} -lt 0 -o ${Minutes} -lt 0 -o ${Seconds} -lt 0 -o ${nanosec} -lt 0 ]; then
+        # LogPrint "${ERROR}" "Something wrong with the system time, begin time($g_StartTime) is later than end time($g_EndTime)."
+        # return 1
+    # fi
+
+    # the order of the following command line matters.
+    if [ "${year}"    != "0"                        ];then Duration="${year} year"; fi
+    if [ "${month}"   != "0" -o "${Duration}" != "" ];then Duration="${Duration} ${month} month"; fi
+    if [ "${day}"     != "0" -o "${Duration}" != "" ];then Duration="${Duration} ${day} day"; fi
+    if [ "${Hours}"   != "0" -o "${Duration}" != "" ];then Duration="${Duration} ${Hours} hour"; fi
+    if [ "${Minutes}" != "0" -o "${Duration}" != "" ];then Duration="${Duration} ${Minutes} minute"; fi
+    if [ "${Seconds}" != "0" -o "${Duration}" != "" ];then Duration="${Duration} ${Seconds} second"; fi
+    if [ "${nanosec}" != "0" -o "${Duration}" != "" ];then Duration="${Duration} ${nanosec} nanoseconds"; fi
+
+    if [ "${gReturnValue}" = "0" ];then
+        LogColour="\033[7m\033[32m" # fg green, exchange the bg and fg
+    fi
+    LogPrint "${SPECIAL}" "\nJob done, Duration : ${LogColour}${g_BeginTime}${ColorOff} ~ ${LogColour}${g_EndTime}${ColorOff}, ${LogColour}${Duration} ${ColorOff}."
+
+    return 0
+}
+
+### Task control
+
+# input para : $1     : thread_num means how many thread will be parallelly run
+#              $2 ... : commands, full command which will be executed
+# dependency : 1. fd6 will be used
+#              2. /dev/shm/$$.fifo will be created and then deleted.
+#              3. bi-direction pipe will be used
+# output     : log file will be created in the working directory. and the file will be named by the processid.fifo.log
+function parallel_run_FIFO()
+{
+    local -i cnt=0
+    local -r fifo="$$.fifo"
+    local -r fifo_tmp="/dev/shm/${fifo}"
+    mkfifo $fifo_tmp      # Create a new fifo file
+    exec 6<>$fifo_tmp     # use fd6 to access the fifo file
+    /bin/rm -f $fifo_tmp          # no more needed, can be deleted
+
+    if [ "$1" = "-h" -o "$1" = "--help" ];then
+        echo "$0 [thread num] cmd1 cmd2 cmd3 ..."
+        return 0
+    fi
+
+    if [ $# -lt 2 ];then echo "At least two parameters are needed."; return 1;fi
+
+    local thread_num=$1
+    IsInt "${thread_num}"
+    if [ $? -ne 0 ]; then
+        thread_num=2
+    else
+        shift
+    fi
+
+    # init the token
+    for ((i=0;i<${thread_num};i++));do
+        echo
+    done >&6
+
+    while [ $# -ne 0 ]; do
+        read -u6 # get token, if all the token occpuied, wait
+
+        {
+            echo -e "$1\n\n" > ${fifo}.log.${cnt}
+            # bash -c "$1" 2>&1 | tee -a "${fifo}.log.${cnt}" # display log on the terminal
+            bash -c "$1" &>> "${fifo}.log.${cnt}"
+            echo >&6
+        } & # fork a new shell to execute the command.
+        (( cnt = cnt + 1 ))
+        shift
+    done &>>"${fifo}.log.pid"
+
+    wait
+    exec 6>&- # close fd6
+
+    return 0
+}
+
+# end of bash_lib file
