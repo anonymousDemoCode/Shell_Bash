@@ -1,6 +1,5 @@
 # begin of bash_lib file
 
-<<<<<<< HEAD
 # TODO
 # sorting array, string ...
 
@@ -179,182 +178,6 @@ if [ "0" = "${bash_lib_included_flag:-0}" ]; then
 
 else
     #echo "$0 $BASH_SOURCE (${BASH_SOURCE[@]})"
-=======
-if [ "0" = "${bash_lib_included_flag:-0}" ]; then
-    declare -x bash_lib_included_flag=bash_lib_included
-	#echo "$0 $BASH_SOURCE (${BASH_SOURCE[@]})"
-
-#	# Begin of function LogPrint
-#	# the following definintion should not add the leading underline, due to the caller need to use them.
-#	# external variables for LogPrint
-#	declare -r ECHO="echo" # just to replace echo
-#	declare -r ERROR="error" # print red color text
-#	declare -r WARN="warn" # print yellow color text
-#	declare -r INFO="info" # print green color text
-#	declare -r MESSAGE="message" # no color
-#	declare -r SPECIAL="special" # exceptional case, print the specified color test, the color control string should be in the second para.
-#	declare -r HIGHLIGHT="highlight" #same with sourceInsight, highlight the messages, yellow background and black text
-#	
-#	declare -r Fmt_ECHO="echo" # just to replace echo, same effect with message
-#	declare -r Fmt_ERROR="error" # print red colour text
-#	declare -r Fmt_WARN="warn" # print yellow colour text
-#	declare -r Fmt_INFO="info" # print green colour text
-#	declare -r Fmt_MESSAGE="message" # no colour
-#	declare -r Fmt_HIGHLIGHT="highlight" #same with sourceInsight, highlight the messages, yellow background and black text
-#
-#	declare -r Fmt_COLOUR_OFF="format_colour_off" # 0 reset to default colour settings
-#	declare -r Fmt_NORMAL="format_normal" # default colour
-#	declare -r Fmt_BOLD="format_bold" # display bold text, 1
-#	declare -r Fmt_HALF_BRIGHTNESS="format_half_brightness" # 2 half brightness
-#	declare -r Fmt_UNDER_LINE="format_under_line" # display under line, 3
-#	declare -r Fmt_BLINK="format_blink" # 5 blink text
-#	declare -r Fmt_EXCHANGE_BG_FG="format_reverse_bg_fg" # 7 exchange back ground colour and foreground colour
-#	declare -r Fmt_NONEWLINE="format_no_new_line" # do not print a new line after the message
-#
-#	declare -r Fmt_DISABLE_UNDER_LINE="format_disable_under_line" # display under line, 3
-#	declare -r Fmt_DISABLE_BLINK="format_disable_blink" # 5 blink text
-#	declare -r Fmt_DISABLE_EXCHANGE_BG_FG="format_disable_reverse_bg_fg" # 7 exchange back ground colour and foreground colour
-#	
-#	#text colour / foreground colour
-#	declare -r Fmt_BLACK="format_black" # black text 30
-#	declare -r Fmt_RED="format_red" # red text 31
-#	declare -r Fmt_GREEN="format_green" # green text 32
-#	declare -r Fmt_YELLOW="format_yellow" # yellow text 33
-#	declare -r Fmt_BLUE="format_blue" # blue text 34
-#	declare -r Fmt_PURPLE="format_purple" # purple text 35
-#	declare -r Fmt_CYAN="format_cyan" # cyan text 36
-#	declare -r Fmt_WHITE="format_white" # white text 37
-#	declare -r Fmt_GRAY="format_gray" # gray text 37
-#
-#	# background colour
-#	declare -r Fmt_BG_BLACK="format_bg_black" # black 40
-#	declare -r Fmt_BG_RED="format_bg_red" # red 41
-#	declare -r Fmt_BG_GREEN="format_bg_green" # green 42
-#	declare -r Fmt_BG_YELLOW="format_bg_yellow" # yellow 43
-#	declare -r Fmt_BG_BLUE="format_bg_blue" # blue 44
-#	declare -r Fmt_BG_PURPLE="format_bg_purple" # purple 45
-#	declare -r Fmt_BG_CYAN="format_bg_cyan" # cyan 46
-#	declare -r Fmt_BG_WHITE="format_bg_white" # white 47
-#	declare -r Fmt_BG_GRAY="format_bg_gray" # gray 47
-#
-#	declare -r Fmt_SPECIAL="format_special" # User customized.
-#	
-#	# 字颜色：30—–37                     |  字背景颜色范围：40—–47 
-#	# echo -e “\033[30m black  \033[0m”  |  echo -e “\033[40;37m bg black,  fg white \033[0m” 
-#	# echo -e “\033[31m red    \033[0m”  |  echo -e “\033[41;37m bg red,    fg white \033[0m” 
-#	# echo -e “\033[32m green  \033[0m”  |  echo -e “\033[42;37m bg green,  fg white \033[0m” 
-#	# echo -e “\033[33m yelow  \033[0m”  |  echo -e “\033[43;37m bg yellow, fg white \033[0m” 
-#	# echo -e “\033[34m blue   \033[0m”  |  echo -e “\033[44;37m bg blue,   fg white \033[0m” 
-#	# echo -e “\033[35m purple \033[0m”  |  echo -e “\033[45;37m bg purple, fg white \033[0m” 
-#	# echo -e “\033[36m cyan   \033[0m”  |  echo -e “\033[46;37m bg cyan,   fg white \033[0m”
-#	# echo -e “\033[37m white  \033[0m”  |  echo -e “\033[47;30m bg white,  fg black \033[0m” 
-#
-#	# echo -e "\033[fg;bg;ctlm  messages \033[0m"
-#	
-#	### # this the a plain version of LogPrint function
-#	### # Usage : LogPrint [ECHO | ERROR | WARN | INFO | HIGHLIGHT | SPECIAL [| MESSAGE]] "Soft/Hard quoted message content"
-#	### # Usage : LogPrint SPECIAL ColorSetting "Soft/Hard quoted message content, disable sequence will be added automatically."
-#	### function LogPrint()
-#	### {
-#	###     local logLevel="${MESSAGE}"
-#	###     local logContent=""
-#	###     local ColorSetting=""
-#	###
-#	###     if [ $# -ne 0 ]; then
-#	###         case "$1" in
-#	###             "${ECHO}" | "${ERROR}" | "${INFO}" | "${WARN}" | "${MESSAGE}" | "${HIGHLIGHT}" ) logLevel="$1"; shift;;
-#	###             "${SPECIAL}" ) logLevel="$1"; ColorSetting="$2"; shift 2;;
-#	###             * ) logLevel="${MESSAGE}";; # LogPrint "${INFO}" 'No log level specified, use the default value : INFO'
-#	###         esac
-#	###     else
-#	###         LogPrint "${ERROR}" "No Parameter for LogPrint! please check."
-#	###     fi
-#	###
-#	###     logContent="${@}"
-#	###
-#	###     case "${logLevel}" in
-#	###         "${ECHO}"      ) echo ${logContent};;
-#	###         "${ERROR}"     ) echo -e "\033[31m${logContent}\033[0m, call trace : ${FUNCNAME[@]";;
-#	###         "${WARN}"      ) echo -e "\033[33m${logContent}\033[0m, call trace : ${FUNCNAME[@]";;
-#	###         "${INFO}"      ) echo -e "\033[32m${logContent}\033[0m";;
-#	###         "${MESSAGE}"   ) echo "${logContent}";;
-#	###         "${SPECIAL}"   ) echo -e "${ColorSetting}${logContent}\033[0m";;
-#	###         "${HIGHLIGHT}" ) echo -e "\033[7m\033[33m${logContent}\033[0m";;
-#	###     esac
-#	###
-#	###     return 0
-#	### }
-#
-#	### TODO : the following function is another version of Log print, need to be merge with the former one.
-#	# Description : Print the text with specified format, if no parameter input, a new line will be printed.
-#	# Usage : LogPrint [ $Fmt_Format ] "Soft/Hard quoted message content"
-#	# Usage : LogPrint "${Format_1}" "${Format_2}" ... "${Format_n}" "Soft/Hard quoted message content" 
-#	# Usage : LogPrint "${SPECIAL}" "${ColourSetting}" "Soft/Hard quoted message content, disable sequence will be added automatically."
-#	function LogPrint()
-#	{
-#		local    IsFeedNewLine=true
-#		local    LogContent=""
-#		local    LogContentPrefix=""
-#		local    LogContentSuffix=""
-#		local -r ColourOff='\033[0m'
-#
-#		for para in "$@"
-#		do
-#			case "$para" in
-#				"${Fmt_ERROR}" | "${Fmt_WARN}" | "${Fmt_INFO}" ) LogContentPrefix="- $(date) -- [$1] : ";;& # must be processed first.
-#				"${Fmt_ECHO}"       ) LogContent="${LogContent}\033[0m";;
-#				"${Fmt_MESSAGE}"    ) LogContent="${LogContent}\033[32m";;
-#				"${Fmt_INFO}"       ) LogContent="${LogContent}\033[32m";;
-#				"${Fmt_WARN}"       ) LogContent="${LogContent}\033[33m, call trace : ${FUNCNAME[@]";;
-#				"${Fmt_ERROR}"      ) LogContent="${LogContent}\033[31m, call trace : ${FUNCNAME[@]";;
-#				"${Fmt_HIGHLIGHT}"  ) LogContent="${LogContent}\033[7m\033[33m";;
-#				"${Fmt_COLOUR_OFF}" ) LogContent="${LogContent}\033[0m";;
-#				"${Fmt_NORMAL}"     ) LogContent="${LogContent}\033[0m";;
-#				"${Fmt_BOLD}"       ) LogContent="${LogContent}\033[1m";;
-#				"${Fmt_HALF_BRIGHTNESS}"        ) LogContent="${LogContent}\033[2m";;
-#				"${Fmt_UNDER_LINE}"             ) LogContent="${LogContent}\033[4m";;
-#				"${Fmt_BLINK}"                  ) LogContent="${LogContent}\033[5m";;
-#				"${Fmt_EXCHANGE_BG_FG}"         ) LogContent="${LogContent}\033[7m";;
-#				"${Fmt_DISABLE_UNDER_LINE}"     ) LogContent="${LogContent}\033[24m";;
-#				"${Fmt_DISABLE_BLINK}"          ) LogContent="${LogContent}\033[25m";;
-#				"${Fmt_DISABLE_EXCHANGE_BG_FG}" ) LogContent="${LogContent}\033[27m";;
-#				"${Fmt_BG_BLACK}"  ) LogContent="${LogContent}\033[40m";;
-#				"${Fmt_BG_RED}"    ) LogContent="${LogContent}\033[41m";;
-#				"${Fmt_BG_GREEN}"  ) LogContent="${LogContent}\033[42m";;
-#				"${Fmt_BG_YELLOW}" ) LogContent="${LogContent}\033[43m";;
-#				"${Fmt_BG_BLUE}"   ) LogContent="${LogContent}\033[44m";;
-#				"${Fmt_BG_PURPLE}" ) LogContent="${LogContent}\033[45m";;
-#				"${Fmt_BG_CYAN}"   ) LogContent="${LogContent}\033[46m";;
-#				"${Fmt_BG_WHITE}"  ) LogContent="${LogContent}\033[47m";;
-#				"${Fmt_BG_GRAY}"   ) LogContent="${LogContent}\033[47m";;
-#				"${Fmt_BLACK}"     ) LogContent="${LogContent}\033[30m";;
-#				"${Fmt_RED}"       ) LogContent="${LogContent}\033[31m";;
-#				"${Fmt_GREEN}"     ) LogContent="${LogContent}\033[32m";;
-#				"${Fmt_YELLOW}"    ) LogContent="${LogContent}\033[33m";;
-#				"${Fmt_BLUE}"      ) LogContent="${LogContent}\033[34m";;
-#				"${Fmt_PURPLE}"    ) LogContent="${LogContent}\033[35m";;
-#				"${Fmt_CYAN}"      ) LogContent="${LogContent}\033[36m";;
-#				"${Fmt_WHITE}"     ) LogContent="${LogContent}\033[37m";;
-#				"${Fmt_GRAY}"      ) LogContent="${LogContent}\033[37m";;
-#				"${Fmt_NONEWLINE}" ) IsFeedNewLine=false;;
-#				"${Fmt_SPECIAL}"   ) break;;
-#				*                  ) LogContent="${LogContent}${para}";;
-#			esac
-#		done
-#
-#		if [ "${IsFeedNewLine}" == "true" ]; then
-#			echo -e "${LogContentPrefix}${LogContent}${LogContentSuffix}${ColourOff}"
-#		else
-#			echo -ne "${LogContentPrefix}${LogContent}${LogContentSuffix}${ColourOff}"
-#		fi
-#
-#		return 0
-#	}
-#	# End of function LogPrint
-
-else
-	#echo "$0 $BASH_SOURCE (${BASH_SOURCE[@]})"
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
     echo "Warning, Double sourced!"
 fi
 
@@ -403,18 +226,13 @@ function CountingDown()
 {
     # clear
     # LogPrint "${Fmt_INFO}" "$1 seconds counting down, \nif you want to cancel this operation, \nyou can strike Ctrl + c"
-<<<<<<< HEAD
     LogPrint -e "$1 seconds counting down, \nif you want to cancel this operation, \nyou can strike Ctrl + c"
-=======
-	LogPrint -e "$1 seconds counting down, \nif you want to cancel this operation, \nyou can strike Ctrl + c"
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
     local backSpaceCount=""
     if [ $# -lt 1 ] || ! IsInt "$1" ;then
         LogPrint "This function need at least one parameter, counting seconds."
         return 1
     fi
 
-<<<<<<< HEAD
     LogPrint -ne "$1";sleep 0.5
     for ((i = $1 - 1; i > 0; i--));do
         backSpaceCount=""
@@ -426,19 +244,6 @@ function CountingDown()
         sleep 0.9
     done
 
-=======
-	LogPrint -ne "$1";sleep 0.5
-    for ((i = $1 - 1; i > 0; i--));do
-		backSpaceCount=""
-		for((i=0; i < ${#i}; i++)); do
-			backSpaceCount="${backSpaceCount}\b"
-		done
-		LogPrint -ne "${backSpaceCount}>>>>>$i"
-		# LogPrint "${Fmt_NONEWLINE}" "${backSpaceCount}>>>>>$i"
-        sleep 0.9
-    done
-	
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
     LogPrint -e "${backSpaceCount}\ Good Luck"
 
     # erase the displayed number, currently 10 spaces erase 10 characters
@@ -454,11 +259,7 @@ function ToLowerCase()
     echo $1 | tr '[A-Z]''[a-z]'
     # echo $1 | tr [:upper:] [:lower:]
 }
-<<<<<<< HEAD
 
-=======
- 
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
 # to upper case
 # para1 : string to be transfer
 function ToUpperCase()
@@ -480,21 +281,13 @@ function get_expected_date()
     local -i lSeconds=0
     local    lDaysOffset=+1
     local    lBaseDate="$(date +%F)"
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
     case "$#" in
         "0" ) echo "No input parameters, use the default value $lDaysOffset $lBaseDate";;
         "1" ) lDaysOffset="$1";;
          *  ) lDaysOffset="$1"; lBaseDate=$2;;
     esac
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
     lSeconds=`date -d $lBaseDate +%s`
     if [ "${lDaysOffset:0:1}" = "-" ];then
         lSeconds=$((lSeconds - 86400*${lDaysOffset:1})) # 86400 sec = 1 day
@@ -509,7 +302,6 @@ function get_expected_date()
     return 0
 }
 
-<<<<<<< HEAD
 # Input Para : $1 / $2 two date, like '20170906' or '20170906 12:24:40'
 function get_Interval_days()
 {
@@ -531,8 +323,6 @@ function get_Interval_days()
     fi
 }
 
-=======
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
 function IsInt()
 {
     expr $1 + 0&>/dev/null
@@ -540,30 +330,18 @@ function IsInt()
         # LogPrint "parameter is not a integer!"
         return 1
     fi
-<<<<<<< HEAD
 
     return 0
     # tmp=`echo $1 | sed 's/[0-9]//g' | sed 's/[-+]//g'`
     # [ -n "${tmp}"]&& { echo "Args must be integer!";exit 1; }
 
-=======
-    
-    return 0
-    # tmp=`echo $1 | sed 's/[0-9]//g' | sed 's/[-+]//g'`
-    # [ -n "${tmp}"]&& { echo "Args must be integer!";exit 1; }
-    
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
     # # Bash
     # if [[ $foo != *[!0-9]* ]]; then
         # echo "'$foo' is strictly numeric"
     # else
         # echo "'$foo' has a non-digit somewhere in it"
     # fi
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
     # # POSIX
     # case $var in
         # '')
@@ -573,21 +351,13 @@ function IsInt()
         # *)
             # printf '%s is strictly numeric\n' "$var";;
     # esac >&2
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
     # # POSIX
     # case $var in
         # '' | *[!0-9]*)
             # echo "$0: $var: invalid digit" >&2; exit 1;;
     # esac
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
     # # POSIX
     # case ${var#[-+]} in   # notice ${var#prefix} substitution to trim sign
         # '')
@@ -599,39 +369,24 @@ function IsInt()
         # *)
             # printf '%s looks like a valid float\n' "$var";;
     # esac >&2
-<<<<<<< HEAD
 
     # shopt -s extglob
     # [[ $var = +([0-9]) ]]
 
-=======
-    
-    # shopt -s extglob
-    # [[ $var = +([0-9]) ]]
-    
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
     # # Bash / ksh
     # shopt -s extglob
 
     # if [[ $foo = @(*[0-9]*|!([+-]|)) && $foo = ?([+-])*([0-9])?(.*([0-9])) ]]; then
       # echo 'foo is a floating-point number'
     # fi
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
     # # Bourne
     # if echo "$foo" | grep -qE '^[-+]?([0-9]+\.?|[0-9]*\.[0-9]+)$'; then
         # echo "'$foo' is a number"
     # else
         # echo "'$foo' is not a number"
     # fi
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
     # # Bash
     # # The regexp must be stored in a var and expanded for backward compatibility with versions < 3.2
 
@@ -641,20 +396,12 @@ function IsInt()
     # else
         # echo "'$foo' doesn't look particularly numeric to me"
     # fi
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
     # # fails with ksh
     # if [ "$foo" -eq "$foo" ] 2>/dev/null; then
      # echo "$foo is an integer"
     # fi
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
     # if printf %f "$foo" >/dev/null 2>&1; then
       # echo "$foo is a float"
     # fi
@@ -723,11 +470,7 @@ function pause()
     # sed -n q &>/dev/null </dev/tty
 
     # read -p "read"
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
     # read -n 1 -p "$*" INP
     # if [ $INP != '' ] ; then
     #         LogPrint "${Fmt_NONEWLINE}" '\b \n'
@@ -748,20 +491,12 @@ function get_user_input()
     return 0
 }
 
-<<<<<<< HEAD
 # because of some ssh terminal do not support the backspace ( ctrl + backspace maybe ?),
-=======
-# because of some ssh terminal do not support the backspace ( ctrl + backspace maybe ?), 
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
 # so there will be some problem for this kind of client
 function test_get_user_input()
 {
     get_user_input
-<<<<<<< HEAD
     LogPrint "${Fmt_INFO}" "your input branch name is ${g_ParaBranchName}"
-=======
-    LogPrint "${Fmt_INFO}" "your input branch name is ${g_ParaBranchName}" 
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
 }
 
 # RANDOM system variable, range 0-32767
@@ -1111,10 +846,7 @@ function globmatches()
 
 
 # TODO : there is a variable in the ENV, named SECONDS it can also record the time
-<<<<<<< HEAD
 # TODO : g_StartTime is needed, but no implemented in this scirpt
-=======
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
 function CalcConsumedTime()
 {
     # depend on g_StartTime, which is set at the very begining of the script
@@ -1125,11 +857,7 @@ function CalcConsumedTime()
     local -i Hours=0
     local -i TimeDiff=0
     local    Duration="0 sec"
-<<<<<<< HEAD
     local    LogColor="\033[7m\033[31m" # fg red, exchange the bg and fg
-=======
-    local    LogColour="\033[7m\033[31m" # fg red, exchange the bg and fg
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
 
     g_EndTime="$(date "+%F %T %Z")"
     ((TimeDiff = $(date -d "${g_EndTime}" +%s) - $(date -d "${g_StartTime}" +%s)))
@@ -1141,7 +869,6 @@ function CalcConsumedTime()
     if [ "${Minutes}" != "0" ];then Duration="${Minutes} min ${Duration}"; fi
     if [ "${Hours}"   != "0" ];then Duration="${Hours} hour ${Duration}"; fi
 
-<<<<<<< HEAD
     if [ "${gReturnValue}" = "0" ];then
         LogColor="\033[7m\033[32m" # fg green, exchange the bg and fg
     fi
@@ -1253,15 +980,6 @@ function parallel_run_FIFO()
     wait
     exec 6>&- # close fd6
 
-=======
-    if [ "${gReturnValue}" != "0" ];then
-        LogColour="\033[7m\033[31m"
-    else
-        LogColour="\033[7m\033[32m" # fg green, exchange the bg and fg
-    fi
-    LogPrint "${Fmt_SPECIAL}" "Job done, Duration : ${LogColour}${g_StartTime} ~ ${g_EndTime}\033[0m, ${LogColour} ${Duration} \033[0m."
-    
->>>>>>> 44404c5ff6689e445e13c67c94583b2e1a9997ad
     return 0
 }
 
